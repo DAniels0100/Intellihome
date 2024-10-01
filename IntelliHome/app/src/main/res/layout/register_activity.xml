@@ -55,6 +55,7 @@
             app:boxStrokeWidth="2dp">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/nameInput"
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -79,6 +80,7 @@
             app:boxStrokeWidth="2dp">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/secondNameInput"
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
                 android:hint="Apellidos"
@@ -116,6 +118,7 @@
             app:boxStrokeWidth="2dp">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edadInput"
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -140,6 +143,7 @@
             app:boxStrokeWidth="2dp">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/phoneNumberInput"
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
                 android:hint="Teléfono"
@@ -164,6 +168,7 @@
         app:layout_constraintTop_toBottomOf="@id/linearLayout2">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/nicknameInput"
             android:layout_width="360dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -190,6 +195,7 @@
         app:layout_constraintTop_toBottomOf="@id/linearLayout2">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/emailInput"
             android:layout_width="360dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -216,9 +222,11 @@
         app:layout_constraintTop_toBottomOf="@id/linearLayout2">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordInput"
             android:layout_width="360dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:inputType="textPassword"
             android:hint="Contraseña"
             android:padding="6dp"
             android:textColorHint="#477991"
@@ -242,6 +250,7 @@
         app:layout_constraintTop_toBottomOf="@id/linearLayout2">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordVerificationInput"
             android:layout_width="360dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -268,6 +277,7 @@
         app:layout_constraintTop_toBottomOf="@id/linearLayout2">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/locationInput"
             android:layout_width="360dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -294,6 +304,7 @@
         app:layout_constraintTop_toBottomOf="@id/linearLayout2">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/HobbyInput"
             android:layout_width="360dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -320,6 +331,7 @@
         app:layout_constraintTop_toBottomOf="@id/linearLayout2">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/preferencesInput"
             android:layout_width="360dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
