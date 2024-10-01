@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">IntelliHome</string>
     <string name="logodeintellihome">logodeintellihome</string>
+    <string name="title_activity_log_in">LogIn</string>
 </resources>
