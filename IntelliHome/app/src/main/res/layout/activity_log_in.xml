@@ -52,7 +52,7 @@
                 android:textColor="#477991"
                 android:textSize="25dp" />
 
-            <EditText
+            <TextView
                 android:id="@+id/olvidarContraseña"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -60,13 +60,14 @@
                 android:layout_marginTop="155dp"
                 android:fontFamily="sans-serif-medium"
                 android:inputType="text"
-                android:minHeight="48dp"
+                android:minHeight="50dp"
                 android:text="¿Olvidó su contraseña?"
                 android:textColor="#FFFFFF"
                 android:textColorHighlight="#000000"
-                android:textColorLink="#000000" />
+                android:textColorLink="#000000"
+                android:textSize="18dp"/>
 
-            <EditText
+            <TextView
                 android:id="@+id/noCuenta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -78,7 +79,8 @@
                 android:text="¿No tiene cuenta?"
                 android:textColor="#FFFFFF"
                 android:textColorHighlight="#000000"
-                android:textColorLink="#000000" />
+                android:textColorLink="#000000"
+                android:textSize="18dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="304dp"
