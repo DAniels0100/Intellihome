@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "217556004383",
+    "project_id": "intellihome-293ec",
+    "storage_bucket": "intellihome-293ec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217556004383:android:c18fb117595871ae456f2a",
+        "android_client_info": {
+          "package_name": "com.example.intellihome"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpJ-3S-IyYvuZJRnfhdDfRTXH1VKc2nLE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

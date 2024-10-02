@@ -16,6 +16,7 @@
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="0dp">
 
+        <!-- Logo Intellihome -->
         <ImageView
             android:id="@+id/logoIntelliHome"
             android:layout_width="232dp"
@@ -40,20 +41,22 @@
             app:layout_constraintStart_toStartOf="parent"
             layout_constrainTop_toTopOf="parent">
 
+            <!-- Btn de ingresar desde log in -->
             <Button
-                android:id="@+id/ingresar"
+                android:id="@+id/logInBtn"
                 android:layout_width="240dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="33dp"
                 android:layout_marginTop="245dp"
                 android:background="@drawable/roundedbutton"
                 android:fontFamily="sans-serif-medium"
-                android:text="Ingresar"
+                android:text="Log In"
                 android:textColor="#477991"
                 android:textSize="25dp" />
 
+            <!-- Btn de olvido contrasena -->
             <TextView
-                android:id="@+id/olvidarContraseña"
+                android:id="@+id/olvidoContraseñaBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="55dp"
@@ -67,8 +70,9 @@
                 android:textColorLink="#000000"
                 android:textSize="18dp"/>
 
+            <!-- Btn de no tener cuenta, redirige a registrarse -->
             <TextView
-                android:id="@+id/noCuenta"
+                android:id="@+id/noCuentaBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="75dp"
@@ -82,6 +86,7 @@
                 android:textColorLink="#000000"
                 android:textSize="18dp"/>
 
+            <!-- Campo de texto para el nombre de usuario con el cual se logea la persona -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="304dp"
                 android:layout_height="wrap_content"
@@ -97,12 +102,14 @@
 
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/nombreUsuarioLogIn"
                     android:layout_width="255dp"
                     android:layout_height="55dp"
                     android:fontFamily="sans-serif-medium"
                     android:hint="     Nombre de Usuario" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Campo de texto para la contrasena del usuario -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -119,6 +126,7 @@
 
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/contrasenaLogIn"
                     android:layout_width="254dp"
                     android:layout_height="55dp"
                     android:fontFamily="sans-serif-medium"
@@ -129,8 +137,9 @@
 
         </androidx.cardview.widget.CardView>
 
+        <!-- Btn registrarse con Google -->
         <Button
-            android:id="@+id/google"
+            android:id="@+id/googleBtn"
             android:layout_width="255dp"
             android:layout_height="55dp"
             android:layout_marginLeft="75dp"
@@ -144,9 +153,9 @@
             android:textSize="15dp"
             tools:ignore="TextSizeCheck" />
 
-
+        <!-- Btn registrarse con Facebook -->
         <Button
-            android:id="@+id/facebook"
+            android:id="@+id/facebookBtn"
             android:layout_width="255dp"
             android:layout_height="55dp"
             android:layout_marginLeft="75dp"
