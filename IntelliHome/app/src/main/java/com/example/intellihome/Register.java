@@ -1,15 +1,28 @@
 package com.example.intellihome;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Firebase;
 import com.google.firebase.database.DataSnapshot;
@@ -22,6 +35,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class Register extends AppCompatActivity {
+
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_PICK = 2;
+    private ImageView subirImagen;
 
     //crear objeto de la DataBaseReference para acceder a la base de datos de FireBase realtime database
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://intellihome-293ec-default-rtdb.firebaseio.com/");
@@ -40,6 +57,7 @@ public class Register extends AppCompatActivity {
         final EditText contrasena = findViewById(R.id.contrasenaInput);
         final EditText contrasenaVerificacion = findViewById(R.id.contrasenaVerificacionInput);
         final Button registroBtn = findViewById(R.id.registrarseBtn);
+        final RadioButton aceptoRadioButton = findViewById(R.id.acepto);
 
         // Configuración del campo de edad con DatePicker
         EditText edad = findViewById(R.id.edadInput);
@@ -52,6 +70,7 @@ public class Register extends AppCompatActivity {
         // Configuración del campo de preferencias de casa con selección múltiple
         TextInputEditText preferenciasCasa = findViewById(R.id.preferenciasCasaInput);
         preferenciasCasa.setOnClickListener(v -> showHousePreferencesDialog(preferenciasCasa));
+
 
         registroBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,11 +92,23 @@ public class Register extends AppCompatActivity {
                         emailTxt.isEmpty() || contrasenaTxt.isEmpty() || contrasenaVerificacionTxt.isEmpty() ||
                         edadTxt.isEmpty()){
                     Toast.makeText(Register.this,"Se necesitan llenar todas las casillas", Toast.LENGTH_SHORT).show();
-                } else if (isPasswordValid(contrasenaTxt)==false || isPasswordValid(contrasenaVerificacionTxt)==false) {
-                    Toast.makeText(Register.this, "La contraseña debe contener una mayúscula, una minúscula y un caractér especial", Toast.LENGTH_LONG).show();
-                } else if (!contrasenaTxt.equals(contrasenaVerificacionTxt)) {
-                    Toast.makeText(Register.this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show();
-                }else{
+                }
+                //verificar que las contrasenas respeten los criterios
+                else if (contrasenaValida(contrasenaTxt)==false || contrasenaValida(contrasenaVerificacionTxt)==false) {
+                    contrasena.setError("Se requiere 8 caracteres, una mayúscula y una minúscula en la contraseña");
+                }
+                //Verificar que las 2 contrasenas coincidan
+                else if (!contrasenaTxt.equals(contrasenaVerificacionTxt)) {
+                    contrasenaVerificacion.setError("Las contraseñas no coinciden");
+                    return;
+                }
+                else if (!terminosAceptados()) {
+                    // El usuario aceptó los términos, continuar con el proceso
+                    // Mostrar un mensaje indicando que debe aceptar los términos
+                    Toast.makeText(Register.this, "Debe aceptar los términos y condiciones para continuar", Toast.LENGTH_SHORT).show();
+                }
+                //se completo el registro exitosamente
+                else{
 
                     databaseReference.child("usuarios").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -86,7 +117,7 @@ public class Register extends AppCompatActivity {
                             if (snapshot.hasChild(nickNameTxt)){
                                 Toast.makeText(Register.this, "Ya el usuario existe", Toast.LENGTH_SHORT).show();
                             }else{
-                                //se usa como identificador/raiz el nickname del usuario
+                                //se usa como identificador/raiz el nickname y correo del usuario
                                 //se envia la data a la base de datos
                                 databaseReference.child("usuarios").child(nickNameTxt).child("nombre").setValue(nombreTxt);
                                 databaseReference.child("usuarios").child(nickNameTxt).child("apellido").setValue(apellidoTxt);
@@ -95,9 +126,18 @@ public class Register extends AppCompatActivity {
                                 databaseReference.child("usuarios").child(nickNameTxt).child("contrasena").setValue(contrasenaTxt);
                                 databaseReference.child("usuarios").child(nickNameTxt).child("edad").setValue(edadTxt);
                                 databaseReference.child("usuarios").child(nickNameTxt).child("domicilio").setValue(domicilioTxt);
+                                // Guardar por correo
+                                String emailFormatted = emailTxt.replace(".", ",");  // Reemplazar el punto para que Firebase lo acepte
+                                databaseReference.child("usuarios").child(emailFormatted).child("nombre").setValue(nombreTxt);
+                                databaseReference.child("usuarios").child(emailFormatted).child("apellido").setValue(apellidoTxt);
+                                databaseReference.child("usuarios").child(emailFormatted).child("numeroTelefono").setValue(numeroTelefonoTxt);
+                                databaseReference.child("usuarios").child(emailFormatted).child("nickname").setValue(nickNameTxt);  // Incluir el nickname aquí
+                                databaseReference.child("usuarios").child(emailFormatted).child("contrasena").setValue(contrasenaTxt);
+                                databaseReference.child("usuarios").child(emailFormatted).child("edad").setValue(edadTxt);
+                                databaseReference.child("usuarios").child(emailFormatted).child("domicilio").setValue(domicilioTxt);
                                 //mostrar mensaje de que se logro guardar la data en la base de datos
                                 Toast.makeText(Register.this, "Se ha registrado de manera exitosa", Toast.LENGTH_SHORT).show();
-                                finish();
+                                startActivity(new Intent(Register.this, Custom.class));
                             }
                         }
 
@@ -110,13 +150,80 @@ public class Register extends AppCompatActivity {
                 }
             }
         });
+        // Configuración para la subida de imagen
+        subirImagen = findViewById(R.id.subirImagen);
+        subirImagen.setOnClickListener(view -> showImageOptionsDialog());
+    }
+
+    private boolean terminosAceptados() {
+        RadioButton aceptoRadioButton = findViewById(R.id.acepto);
+
+        // Verifica si el RadioButton "Acepto" está marcado
+        return aceptoRadioButton.isChecked();
+    }
+
+    // Mostrar opciones de "Tomar Foto" o "Seleccionar desde Galería"
+    private void showImageOptionsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Selecciona una opción");
+        String[] options = {"Tomar Foto", "Seleccionar desde Galería"};
+        builder.setItems(options, (dialog, which) -> {
+            if (which == 0) {
+                // Tomar foto
+                if (ContextCompat.checkSelfPermission(Register.this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(Register.this, new String[]{Manifest.permission.CAMERA}, REQUEST_IMAGE_CAPTURE);
+                } else {
+                    openCamera();
+                }
+            } else if (which == 1) {
+                // Seleccionar desde galería
+                openGallery();
+            }
+        });
+        builder.show();
+    }
+
+    // Abrir cámara
+    private void openCamera() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    // Abrir galería
+    private void openGallery() {
+        Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickPhotoIntent, REQUEST_IMAGE_PICK);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_IMAGE_CAPTURE && data != null) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                subirImagen.setImageBitmap(imageBitmap); // Mostrar la foto tomada
+            } else if (requestCode == REQUEST_IMAGE_PICK && data != null) {
+                Uri imageUri = data.getData();
+                subirImagen.setImageURI(imageUri); // Mostrar la imagen seleccionada de la galería
+            }
+        }
     }
 
     //verificar que la contrasena es valida
-    public static boolean isPasswordValid(String password) {
+    public static boolean contrasenaValida(String password) {
+
         boolean hasUpperCase = false;
         boolean hasLowerCase = false;
         boolean hasSpecialChar = false;
+
+        // Verificar que la contraseña tenga al menos 8 caracteres
+        if (password.length() < 8) {
+            return false;
+        }
 
         for (int i = 0; i < password.length(); i++) {
             char c = password.charAt(i);
@@ -151,6 +258,7 @@ public class Register extends AppCompatActivity {
                 (view, selectedYear, selectedMonth, selectedDay) -> {
                     Calendar selectedCalendar = Calendar.getInstance();
                     selectedCalendar.set(selectedYear, selectedMonth, selectedDay);
+
                     int age = calculateAge(selectedCalendar.getTimeInMillis());
                     edadEditText.setText(String.valueOf(age));
                 },
@@ -159,6 +267,7 @@ public class Register extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    // Método para calcular la edad
     private int calculateAge(long birthDateInMillis) {
         Calendar now = Calendar.getInstance();
         Calendar birthDate = Calendar.getInstance();
@@ -198,23 +307,23 @@ public class Register extends AppCompatActivity {
 
     // Método para mostrar el cuadro de selección múltiple para preferencias de casa
     private void showHousePreferencesDialog(TextInputEditText preferenciasCasaEditText) {
-        String[] houseTypes = {"Rústica", "Moderno", "Clásico", "Minimalista", "Industrial"};
+        String[] houseTypes = {"Apartamento", "Casa", "Casa de campo", "Estudio", "Mansión"};
         boolean[] seleccionados = new boolean[houseTypes.length];
-        ArrayList<String> preferenciasSeleccionadas = new ArrayList<>();
+        ArrayList<String> housePreferencesSeleccionados = new ArrayList<>();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Selecciona tus preferencias de casa");
 
         builder.setMultiChoiceItems(houseTypes, seleccionados, (dialog, which, isChecked) -> {
             if (isChecked) {
-                preferenciasSeleccionadas.add(houseTypes[which]);
+                housePreferencesSeleccionados.add(houseTypes[which]);
             } else {
-                preferenciasSeleccionadas.remove(houseTypes[which]);
+                housePreferencesSeleccionados.remove(houseTypes[which]);
             }
         });
 
         builder.setPositiveButton("OK", (dialog, which) -> {
-            preferenciasCasaEditText.setText(android.text.TextUtils.join(", ", preferenciasSeleccionadas));
+            preferenciasCasaEditText.setText(TextUtils.join(", ", housePreferencesSeleccionados));
         });
 
         builder.setNegativeButton("Cancelar", null);

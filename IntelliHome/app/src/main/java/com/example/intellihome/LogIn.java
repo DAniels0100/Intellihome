@@ -10,12 +10,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 public class LogIn extends AppCompatActivity {
+
+
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://intellihome-293ec-default-rtdb.firebaseio.com/");
+
+
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -38,14 +50,40 @@ public class LogIn extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                final String nombreUsuarioTxt = nombreUsuario.getText().toString();
-                final String contrasenaTxt = contrasena.getText().toString();
+                final String nicknameOcorreoTxt = nombreUsuario.getText().toString().trim();
+                final String contrasenaTxt = contrasena.getText().toString().trim();
 
-                if (nombreUsuarioTxt.isEmpty() || contrasenaTxt.isEmpty()){
-                    Toast.makeText(LogIn.this, "Debe ingresar el nombre de usuario y contraseña" , Toast.LENGTH_SHORT).show();
+                if (nicknameOcorreoTxt.isEmpty() || contrasenaTxt.isEmpty()){
+                    Toast.makeText(LogIn.this, "Debe ingresar el nombre de usuario y contraseña", Toast.LENGTH_SHORT).show();
                 }
-                else{
+                else {
+                    // Reemplazar los puntos con comas si el usuario ingresó un correo
+                    String nicknameOcorreo = nicknameOcorreoTxt.contains("@") ? nicknameOcorreoTxt.replace(".", ",") : nicknameOcorreoTxt;
 
+                    databaseReference.child("usuarios").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            // Verificar si el nickname o correo formateado existe
+                            if (snapshot.hasChild(nicknameOcorreo)) {
+                                // Obtener la contraseña del usuario
+                                String getContrasena = snapshot.child(nicknameOcorreo).child("contrasena").getValue(String.class);
+
+                                // Comprobar si la contraseña ingresada coincide
+                                if (getContrasena.equals(contrasenaTxt)) {
+                                    startActivity(new Intent(LogIn.this, HomePage.class));
+                                } else {
+                                    Toast.makeText(LogIn.this, "Correo o Contraseña incorrecta", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(LogIn.this, "Usuario no existe", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(LogIn.this, "Error al conectar con la base de datos", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         });
