@@ -40,6 +40,13 @@ public class Register extends AppCompatActivity {
     private static final int REQUEST_IMAGE_PICK = 2;
     private ImageView subirImagen;
 
+    // Lista de palabras prohibidas
+    private static final String[] PROHIBITED_WORDS = {
+            "sexo", "muerte", "puta", "estúpido", "estúpida", "mierda", "pene", "vagina",
+            "cabrón", "tonto", "idiota", "coño", "maldito", "imbecil", "bastardo", "nazi",
+            "estupido", "estupida", "imbécil"
+    };
+
     //crear objeto de la DataBaseReference para acceder a la base de datos de FireBase realtime database
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://intellihome-293ec-default-rtdb.firebaseio.com/");
 
@@ -92,6 +99,9 @@ public class Register extends AppCompatActivity {
                         emailTxt.isEmpty() || contrasenaTxt.isEmpty() || contrasenaVerificacionTxt.isEmpty() ||
                         edadTxt.isEmpty()){
                     Toast.makeText(Register.this,"Se necesitan llenar todas las casillas", Toast.LENGTH_SHORT).show();
+                }else if (containsProhibitedWords(nickNameTxt)) {
+                    nickName.setError("El nickname contiene palabras prohibidas");
+                    return;
                 }
                 //verificar que las contrasenas respeten los criterios
                 else if (contrasenaValida(contrasenaTxt)==false || contrasenaValida(contrasenaVerificacionTxt)==false) {
@@ -213,6 +223,16 @@ public class Register extends AppCompatActivity {
         }
     }
 
+    // Método para verificar si el nickname contiene palabras prohibidas
+    private boolean containsProhibitedWords(String nickname) {
+        for (String word : PROHIBITED_WORDS) {
+            if (nickname.toLowerCase().contains(word.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //verificar que la contrasena es valida
     public static boolean contrasenaValida(String password) {
 
@@ -282,7 +302,7 @@ public class Register extends AppCompatActivity {
 
     // Método para mostrar el cuadro de selección múltiple para pasatiempos
     private void showHobbiesDialog(TextInputEditText pasatiemposEditText) {
-        String[] pasatiemposArray = {"Leer", "Deportes", "Viajar", "Cine", "Música"};
+        String[] pasatiemposArray = {"Leer", "Deportes", "Viajar", "Cine", "Música", "Danza", "Cantar", "Fotografía", "Cine y series", "Manualidades", "Voluntariado", "Cocina", "Videojuegos"};
         boolean[] seleccionados = new boolean[pasatiemposArray.length];
         ArrayList<String> pasatiemposSeleccionados = new ArrayList<>();
 
@@ -307,7 +327,7 @@ public class Register extends AppCompatActivity {
 
     // Método para mostrar el cuadro de selección múltiple para preferencias de casa
     private void showHousePreferencesDialog(TextInputEditText preferenciasCasaEditText) {
-        String[] houseTypes = {"Apartamento", "Casa", "Casa de campo", "Estudio", "Mansión"};
+        String[] houseTypes = {"Apartamento", "Casa", "Casa de campo", "Estudio", "Mansión", "Villa", "Penthouse", "Cabaña"};
         boolean[] seleccionados = new boolean[houseTypes.length];
         ArrayList<String> housePreferencesSeleccionados = new ArrayList<>();
 
@@ -329,6 +349,7 @@ public class Register extends AppCompatActivity {
         builder.setNegativeButton("Cancelar", null);
         builder.create().show();
     }
+
 }
 
 

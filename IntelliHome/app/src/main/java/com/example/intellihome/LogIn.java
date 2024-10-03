@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -29,6 +31,7 @@ public class LogIn extends AppCompatActivity {
 
 
 
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,9 @@ public class LogIn extends AppCompatActivity {
         final Button logInWithFacebook = findViewById(R.id.facebookBtn);
         final TextView noCuentaBtn = findViewById(R.id.noCuentaBtn);
         final TextView olvidoContrasena = findViewById(R.id.olvidoContraseñaBtn);
+
+        // Referencia al ImageView del ícono de About
+        final ImageView aboutImageView = findViewById(R.id.about);
 
         //click sobre btn log in
         logInBtn.setOnClickListener(new View.OnClickListener() {
@@ -95,6 +101,26 @@ public class LogIn extends AppCompatActivity {
 
                 startActivity(new Intent(LogIn.this, Register.class));
 
+            }
+        });
+
+        // Agregar un click listener al ImageView para mostrar la ventana emergente
+        aboutImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Crear el AlertDialog con la información requerida
+                AlertDialog.Builder builder = new AlertDialog.Builder(LogIn.this);
+                builder.setTitle("Información de la Aplicación");
+                builder.setMessage("Creadores: Systec Enterprise Technology\n"
+                        + "Versión de la app: 1.1.0\n"
+                        + "Dónde se realiza: Costa Rica\n"
+                        + "Dónde tiene vigencia: Costa Rica");
+
+                // Agregar un botón de 'Cerrar' para que el usuario pueda cerrar el diálogo
+                builder.setPositiveButton("Cerrar", null);
+
+                // Mostrar el diálogo
+                builder.show();
             }
         });
     }
